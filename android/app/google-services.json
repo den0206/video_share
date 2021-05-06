@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "4778893753",
+    "firebase_url": "https://uber-clone-60fc0.firebaseio.com",
+    "project_id": "uber-clone-60fc0",
+    "storage_bucket": "uber-clone-60fc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4778893753:android:09ce6dd02a1608106a9668",
+        "android_client_info": {
+          "package_name": "com.example.video_share"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4778893753-2m2vl8duoosigtjmomeopnmneo1uimo3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa_fBmWyFNT7xcs27VPBrrJ55YvLC9UJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4778893753-2m2vl8duoosigtjmomeopnmneo1uimo3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "4778893753-g747e4pu3lvsmug9qmusmo3p30dtctd4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "mineo.jp.mac.pop.Uber-clone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
