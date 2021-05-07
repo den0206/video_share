@@ -152,3 +152,39 @@ class OverlayLoadingWidget extends StatelessWidget {
     );
   }
 }
+
+class CirculeAnimation extends StatefulWidget {
+  final Widget mychild;
+  CirculeAnimation(this.mychild);
+
+  @override
+  _CirculeAnimationState createState() => _CirculeAnimationState();
+}
+
+class _CirculeAnimationState extends State<CirculeAnimation>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 5000));
+    controller.forward();
+    controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RotationTransition(
+      turns: Tween(begin: 0.0, end: 1.0).animate(controller),
+      child: widget.mychild,
+    );
+  }
+}
