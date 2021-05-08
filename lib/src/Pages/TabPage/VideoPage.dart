@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/Style.dart';
 
@@ -8,135 +9,139 @@ class VideoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  height: 100,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Folllowing",
-                        style: googleFont(
-                          size: 17,
-                          color: Colors.white,
-                          fw: FontWeight.bold,
-                        ),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          VideoPlayerPage(
+            videoUrl: "http://egaoinc.xsrv.jp/egao-blog/movie/sample-movie.mp4",
+          ),
+          Column(
+            children: [
+              Container(
+                height: 100,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Folllowing",
+                      style: googleFont(
+                        size: 17,
+                        color: Colors.white,
+                        fw: FontWeight.bold,
                       ),
-                      SizedBox(
-                        width: 15,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      "For You",
+                      style: googleFont(
+                        size: 17,
+                        color: Colors.white,
+                        fw: FontWeight.bold,
                       ),
-                      Text(
-                        "For You",
-                        style: googleFont(
-                          size: 17,
-                          color: Colors.white,
-                          fw: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 70,
-                          padding: EdgeInsets.only(left: 20),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "username",
-                                style: googleFont(
-                                    size: 15,
-                                    color: Colors.white,
-                                    fw: FontWeight.bold),
-                              ),
-                              Text(
-                                "caption",
-                                style: googleFont(
-                                    size: 15,
-                                    color: Colors.white,
-                                    fw: FontWeight.bold),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.music_note,
-                                    size: 15,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    "Song Name",
-                                    style: googleFont(
-                                      size: 15,
-                                      color: Colors.white,
-                                      fw: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 100,
-                        margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height / 12,
-                        ),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 70,
+                        padding: EdgeInsets.only(left: 20),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            _BuildProfile(url: ""),
-                            _VideoIconButton(
-                              text: "Likes",
-                              icon: Icon(
-                                Icons.favorite,
-                                size: 55,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                print("Icon");
-                              },
+                            Text(
+                              "username",
+                              style: googleFont(
+                                  size: 15,
+                                  color: Colors.white,
+                                  fw: FontWeight.bold),
                             ),
-                            _VideoIconButton(
-                              text: "Comment",
-                              icon: Icon(Icons.comment,
-                                  size: 55, color: Colors.white),
-                              onPressed: () {
-                                print("Comment");
-                              },
+                            Text(
+                              "caption",
+                              style: googleFont(
+                                  size: 15,
+                                  color: Colors.white,
+                                  fw: FontWeight.bold),
                             ),
-                            _VideoIconButton(
-                              text: "hare",
-                              icon: Icon(Icons.reply,
-                                  size: 55, color: Colors.white),
-                              onPressed: () {
-                                print("Share");
-                              },
-                            ),
-                            CirculeAnimation(_AnimationProfile(url: ""))
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.music_note,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  "Song Name",
+                                  style: googleFont(
+                                    size: 15,
+                                    color: Colors.white,
+                                    fw: FontWeight.bold,
+                                  ),
+                                )
+                              ],
+                            )
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            )
-          ],
-        ));
+                      ),
+                    ),
+                    Container(
+                      width: 100,
+                      margin: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height / 12),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _BuildProfile(url: ""),
+                          _VideoIconButton(
+                            text: "Likes",
+                            icon: Icon(
+                              Icons.favorite,
+                              size: 55,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              print("Icon");
+                            },
+                          ),
+                          _VideoIconButton(
+                            text: "Comment",
+                            icon: Icon(Icons.comment,
+                                size: 55, color: Colors.white),
+                            onPressed: () {
+                              print("Comment");
+                            },
+                          ),
+                          _VideoIconButton(
+                            text: "hare",
+                            icon: Icon(Icons.reply,
+                                size: 55, color: Colors.white),
+                            onPressed: () {
+                              print("Share");
+                            },
+                          ),
+                          CirculeAnimation(_AnimationProfile(url: ""))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -155,6 +160,7 @@ class _VideoIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
           icon: icon,
@@ -169,7 +175,6 @@ class _VideoIconButton extends StatelessWidget {
             size: 10,
             color: Colors.white,
           ),
-          textAlign: TextAlign.center,
         )
       ],
     );
@@ -264,6 +269,46 @@ class _AnimationProfile extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class VideoPlayerPage extends StatefulWidget {
+  VideoPlayerPage({
+    Key key,
+    @required this.videoUrl,
+  }) : super(key: key);
+  final String videoUrl;
+
+  @override
+  _VideoPlayerPageState createState() => _VideoPlayerPageState();
+}
+
+class _VideoPlayerPageState extends State<VideoPlayerPage> {
+  VideoPlayerController videoPlayerController;
+
+  @override
+  void initState() {
+    super.initState();
+    videoPlayerController = VideoPlayerController.network(widget.videoUrl)
+      ..initialize().then((value) {
+        videoPlayerController.play();
+        videoPlayerController.setVolume(1);
+      });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    videoPlayerController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: VideoPlayer(videoPlayerController),
     );
   }
 }

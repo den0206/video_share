@@ -29,7 +29,13 @@ dependencies:
   connectivity: ^3.0.3
   firebase_auth: ^1.0.3
   firebase_core: ^1.0.3
+  firebase_storage: 
+  image_picker: ^0.7.4
+  video_compress: ^3.0.0
+
   google_fonts:
+  video_player:
+
 
 
 

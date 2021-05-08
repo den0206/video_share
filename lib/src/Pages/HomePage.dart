@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
+import 'package:video_share/src/Pages/TabPage/AddPage.dart';
 
 import 'TabPage/VideoPage.dart';
 
@@ -10,7 +11,7 @@ class HomePage extends StatelessWidget {
   final List _tabPages = [
     VideoPage(),
     Text("Search"),
-    Text("Add"),
+    AddPage(),
     Text("Message"),
     Text("Profile"),
   ];
