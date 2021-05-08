@@ -47,8 +47,11 @@ class HomePage extends StatelessWidget {
             ];
 
             return Scaffold(
+              extendBody: true,
               body: _tabPages[model.currentIndex],
               bottomNavigationBar: BottomNavigationBar(
+                elevation: 0,
+                backgroundColor: Color(0x00ffffff),
                 type: BottomNavigationBarType.fixed,
                 onTap: model.setIndex,
                 currentIndex: model.currentIndex,

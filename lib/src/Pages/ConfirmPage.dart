@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/FirebaseRef.dart';
 import 'package:video_share/src/Extension/StrogageRef.dart';
 import 'package:video_share/src/Extension/Style.dart';
+import 'package:video_share/src/Model/Video.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
 class ConfirmPage extends StatelessWidget {
@@ -102,7 +105,10 @@ class ConfirmPage extends StatelessWidget {
                             title: "UploadVideo",
                             backColor: Colors.lightBlue,
                             onPressed: () {
-                              model.uploadVideo(onFail: (e) {
+                              model.uploadVideo(onSuccess: (video) {
+                                print(video.id);
+                                Navigator.of(context).pop();
+                              }, onFail: (e) {
                                 showErrorDialog(context, e);
                               });
                             },
@@ -148,31 +154,72 @@ class _ConfirmPageModel extends ChangeNotifier {
     print("Dispose");
     super.dispose();
     controller.dispose();
+    videoFile.delete();
   }
 
-  void uploadVideo({Function onFail}) async {
+  void uploadVideo({
+    Function(Video video) onSuccess,
+    Function(dynamic e) onFail,
+  }) async {
+    var connection = await Connectivity().checkConnectivity();
+
+    if (connection != ConnectivityResult.wifi &&
+        connection != ConnectivityResult.mobile) {
+      Exception error = Exception("No InterNet");
+      onFail(error);
+      return;
+    }
+
+    if ((musicController.text.isEmpty || captionController.text.isEmpty)) {
+      Exception error = Exception("Please fill");
+
+      onFail(error);
+      return;
+    }
+
     isLoading = true;
     notifyListeners();
 
     try {
-      var alldocs = await firebaseRef(FirebaseRef.user)
+      // var alldocs = await firebaseRef(FirebaseRef.user)
+      //     .doc(currentUser.uid)
+      //     .collection(FirebaseRef.video.path)
+      //     .get();
+      // int length = alldocs.docs.length;
+
+      var uuid = Uuid().v1();
+
+      String videoPath = "${currentUser.uid}/$uuid";
+
+      String videoUrl = await uploadStorage(
+          StorageRef.video, videoPath + "/video", videoFile);
+      String imageUrl = await uploadStorage(
+          StorageRef.video,
+          videoPath + "/image",
+          await getThumbnailImage(path: path),
+          UploadType.image);
+
+      Video video = Video(
+        id: uuid,
+        videoUrl: videoUrl,
+        imageUrl: imageUrl,
+        caption: captionController.text,
+        songName: musicController.text,
+        commentCount: 0,
+        shareCount: 0,
+        user: currentUser,
+      );
+
+      firebaseRef(FirebaseRef.user)
           .doc(currentUser.uid)
           .collection(FirebaseRef.video.path)
-          .get();
-
-      int length = alldocs.docs.length;
-      String videiPath = "${currentUser.uid}/Video$length";
-
-      String videoUrl =
-          await uploadStorage(StorageRef.video, videiPath, videoFile);
-      String imageUrl = await uploadStorage(
-          StorageRef.image, videiPath, await getThumbnailImage(path: path));
-
-      print(videoUrl);
-      print(imageUrl);
+          .doc(uuid)
+          .set(video.toMap());
 
       isLoading = false;
       notifyListeners();
+
+      onSuccess(video);
     } catch (e) {
       onFail(e);
     }

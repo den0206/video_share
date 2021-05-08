@@ -23,14 +23,26 @@ Reference storageRef(StorageRef ref) {
   return FirebaseStorage.instance.ref().child(ref.path);
 }
 
-Future<String> uploadStorage(StorageRef ref, String path, dynamic file) async {
+enum UploadType { video, image }
+Future<String> uploadStorage(StorageRef ref, String path, dynamic file,
+    [UploadType type = UploadType.video]) async {
   Reference filePath = storageRef(ref).child(path);
-  UploadTask uploadTask = filePath.putFile(file);
+  UploadTask uploadTask;
+
+  switch (type) {
+    case UploadType.video:
+      uploadTask =
+          filePath.putFile(file, SettableMetadata(contentType: 'video/mp4'));
+      break;
+    case UploadType.image:
+      uploadTask = filePath.putFile(file);
+      break;
+  }
+
   TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
 
   String dounloadUrl = await taskSnapshot.ref.getDownloadURL();
-  print(dounloadUrl);
-  return dounloadUrl;
+  return dounloadUrl.toString();
 }
 
 Future<File> getThumbnailImage({@required String path}) async {
