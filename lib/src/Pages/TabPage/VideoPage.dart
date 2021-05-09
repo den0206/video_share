@@ -5,21 +5,35 @@ import 'package:video_player/video_player.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/FirebaseRef.dart';
 import 'package:video_share/src/Extension/Style.dart';
+import 'package:video_share/src/Model/FBUser.dart';
 import 'package:video_share/src/Model/Video.dart';
 
 class VideoPageModel extends ChangeNotifier {
-  Stream stream;
-  // Stream<List<Video>> videos;
+  // Stream stream;
+  List<Video> videos = [];
 
-  VideoPageModel() {
-    stream = FirebaseFirestore.instance
+  Stream<List<Video>> getVideos() async* {
+    var videoStream = FirebaseFirestore.instance
         .collectionGroup(FirebaseRef.video.path)
         .snapshots();
+    // List<Video> videos = [];
 
-    // videos = FirebaseFirestore.instance
-    //     .collectionGroup(FirebaseRef.video.path)
-    //     .snapshots()
-    //     .map((snapshot) => snapshot.docs.map((doc) => Video.fromDocument(doc)));
+    await for (var videoSnapshot in videoStream) {
+      for (var videoDoc in videoSnapshot.docs) {
+        Video video;
+        if (videoDoc[VideoKey.userId] != null) {
+          var userSnapshot = await firebaseRef(FirebaseRef.user)
+              .doc(videoDoc[VideoKey.userId])
+              .get();
+          video = Video.fromDocument(videoDoc);
+          video.user = FBUser.fromDocument(userSnapshot);
+        } else {
+          video = Video.fromDocument(videoDoc);
+        }
+        videos.add(video);
+      }
+      yield videos;
+    }
   }
 }
 
@@ -36,7 +50,7 @@ class VideoPage extends StatelessWidget {
           return Consumer<VideoPageModel>(
             builder: (context, model, child) {
               return StreamBuilder(
-                stream: model.stream,
+                stream: model.getVideos(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(
@@ -46,16 +60,15 @@ class VideoPage extends StatelessWidget {
                     );
                   }
 
-                  if (snapshot.data.docs.length == 0) {
+                  if (snapshot.data.length == 0) {
                     return Center(child: Text("No Videos"));
                   }
 
                   return PageView.builder(
-                    itemCount: snapshot.data.docs.length,
+                    itemCount: snapshot.data.length,
                     scrollDirection: Axis.vertical,
                     itemBuilder: (context, index) {
-                      DocumentSnapshot doc = snapshot.data.docs[index];
-                      Video video = Video.fromDocument(doc);
+                      Video video = model.videos[index];
 
                       return _VideoView(
                         video: video,
@@ -131,15 +144,16 @@ class _VideoView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (video.user != null)
+                            Text(
+                              video.user.name,
+                              style: googleFont(
+                                  size: 15,
+                                  color: Colors.white,
+                                  fw: FontWeight.bold),
+                            ),
                           Text(
-                            "username",
-                            style: googleFont(
-                                size: 15,
-                                color: Colors.white,
-                                fw: FontWeight.bold),
-                          ),
-                          Text(
-                            "caption",
+                            video.caption,
                             style: googleFont(
                                 size: 15,
                                 color: Colors.white,
@@ -153,7 +167,7 @@ class _VideoView extends StatelessWidget {
                                 color: Colors.white,
                               ),
                               Text(
-                                "Song Name",
+                                video.songName,
                                 style: googleFont(
                                   size: 15,
                                   color: Colors.white,
@@ -358,13 +372,17 @@ class VideoPlayerPage extends StatefulWidget {
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   VideoPlayerController videoPlayerController;
 
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
     videoPlayerController = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((value) {
+        isLoading = false;
         videoPlayerController.play();
         videoPlayerController.setVolume(1);
+        videoPlayerController.setLooping(true);
       });
   }
 
@@ -376,10 +394,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: VideoPlayer(videoPlayerController),
-    );
+    return !isLoading
+        ? Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: VideoPlayer(videoPlayerController),
+          )
+        : Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ),
+          );
   }
 }

@@ -49,3 +49,12 @@ Future<File> getThumbnailImage({@required String path}) async {
   final thumbnail = await VideoCompress.getFileThumbnail(path);
   return thumbnail;
 }
+
+Future<File> compressVideo(String path) async {
+  final compressVideo = await VideoCompress.compressVideo(
+    path,
+    quality: VideoQuality.DefaultQuality,
+  );
+
+  return compressVideo.file;
+}

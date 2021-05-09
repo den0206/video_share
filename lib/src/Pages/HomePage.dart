@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
             ];
 
             return Scaffold(
-              extendBody: true,
+              // extendBody: true,
               body: _tabPages[model.currentIndex],
               bottomNavigationBar: BottomNavigationBar(
                 elevation: 0,

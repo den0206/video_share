@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_share/src/Extension/CustomTextField.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
@@ -47,6 +50,22 @@ class SignUpPage extends StatelessWidget {
                               key: _formKey,
                               child: Column(
                                 children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2,
+                                      ),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: IconButton(
+                                      iconSize: 80,
+                                      icon: model.userImage == null
+                                          ? Icon(Icons.person)
+                                          : Image.file(model.userImage),
+                                      onPressed: model.selectImage,
+                                    ),
+                                  ),
                                   CustomTextFields(
                                     controller: model.nameTextControlller,
                                     labeltext: "Fullname",
@@ -142,6 +161,7 @@ class SignUpPage extends StatelessWidget {
 }
 
 class SignUpPageModel extends ChangeNotifier {
+  File userImage;
   TextEditingController nameTextControlller = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -192,5 +212,11 @@ class SignUpPageModel extends ChangeNotifier {
     }
 
     loading = false;
+  }
+
+  Future selectImage() async {
+    final videoPath = await ImagePicker().getImage(source: ImageSource.gallery);
+    if (videoPath != null) userImage = File(videoPath.path);
+    notifyListeners();
   }
 }

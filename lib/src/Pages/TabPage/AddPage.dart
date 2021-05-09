@@ -15,14 +15,16 @@ class AddPage extends StatelessWidget {
       Navigator.pop(context);
 
       final video = await ImagePicker().getVideo(source: src);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfirmPage(
-                videoFile: File(video.path),
-                path: video.path,
-                imageSource: src),
-          ));
+
+      if (video != null)
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConfirmPage(
+                  videoFile: File(video.path),
+                  path: video.path,
+                  imageSource: src),
+            ));
     }
 
     Future showVideoDialog(BuildContext context) {

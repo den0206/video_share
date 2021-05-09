@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:video_share/src/Extension/FirebaseRef.dart';
 import 'package:video_share/src/Model/FBUser.dart';
 
 class Video {
@@ -23,14 +22,6 @@ class Video {
     caption = document.data()[VideoKey.caption] as String;
     shareCount = document.data()[VideoKey.shareCount] as int;
     commentCount = document.data()[VideoKey.commentCount] as int;
-
-    String uid = document.data()[VideoKey.userId] as String;
-    if (uid != null) {
-      firebaseRef(FirebaseRef.user).doc(uid).get().then((doc) {
-        FBUser user = FBUser.fromDocument(doc);
-        this.user = user;
-      });
-    }
   }
 
   Map<String, dynamic> toMap() {
@@ -51,6 +42,7 @@ class Video {
   String imageUrl;
   String songName;
   String caption;
+
   FBUser user;
 
   int shareCount;

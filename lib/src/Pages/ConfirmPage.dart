@@ -181,23 +181,19 @@ class _ConfirmPageModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // var alldocs = await firebaseRef(FirebaseRef.user)
-      //     .doc(currentUser.uid)
-      //     .collection(FirebaseRef.video.path)
-      //     .get();
-      // int length = alldocs.docs.length;
-
       var uuid = Uuid().v1();
 
       String videoPath = "${currentUser.uid}/$uuid";
 
       String videoUrl = await uploadStorage(
-          StorageRef.video, videoPath + "/video", videoFile);
+          StorageRef.video, videoPath + "/video", await compressVideo(path));
+
       String imageUrl = await uploadStorage(
-          StorageRef.video,
-          videoPath + "/image",
-          await getThumbnailImage(path: path),
-          UploadType.image);
+        StorageRef.video,
+        videoPath + "/image",
+        await getThumbnailImage(path: path),
+        UploadType.image,
+      );
 
       Video video = Video(
         id: uuid,
