@@ -16,7 +16,7 @@ class AddPage extends StatelessWidget {
 
       final video = await ImagePicker().getVideo(source: src);
 
-      if (video != null)
+      if (video != null) {
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -25,6 +25,9 @@ class AddPage extends StatelessWidget {
                   path: video.path,
                   imageSource: src),
             ));
+      } else {
+        print("Cancel");
+      }
     }
 
     Future showVideoDialog(BuildContext context) {

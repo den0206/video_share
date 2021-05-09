@@ -98,7 +98,7 @@ class _VideoView extends StatelessWidget {
     return Stack(
       children: [
         VideoPlayerPage(
-          videoUrl: video.videoUrl,
+          video: video,
         ),
         Column(
           children: [
@@ -188,7 +188,7 @@ class _VideoView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _BuildProfile(url: ""),
+                        // _BuildProfile(url: ""),
                         _VideoIconButton(
                           text: "Likes",
                           icon: Icon(
@@ -209,14 +209,18 @@ class _VideoView extends StatelessWidget {
                           },
                         ),
                         _VideoIconButton(
-                          text: "hare",
+                          text: "here",
                           icon:
                               Icon(Icons.reply, size: 55, color: Colors.white),
                           onPressed: () {
                             print("Share");
                           },
                         ),
-                        CirculeAnimation(_AnimationProfile(url: ""))
+                        CirculeAnimation(
+                          _AnimationProfile(
+                            user: video.user,
+                          ),
+                        )
                       ],
                     ),
                   )
@@ -324,10 +328,10 @@ class _BuildProfile extends StatelessWidget {
 class _AnimationProfile extends StatelessWidget {
   const _AnimationProfile({
     Key key,
-    @required this.url,
+    @required this.user,
   }) : super(key: key);
 
-  final String url;
+  final FBUser user;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -346,10 +350,12 @@ class _AnimationProfile extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25),
-              child: Image(
-                image: NetworkImage(url),
-                fit: BoxFit.cover,
-              ),
+              child: user.imageUrl != null
+                  ? Image(
+                      image: NetworkImage(user.imageUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : Icon(Icons.person),
             ),
           )
         ],
@@ -361,9 +367,9 @@ class _AnimationProfile extends StatelessWidget {
 class VideoPlayerPage extends StatefulWidget {
   VideoPlayerPage({
     Key key,
-    @required this.videoUrl,
+    @required this.video,
   }) : super(key: key);
-  final String videoUrl;
+  final Video video;
 
   @override
   _VideoPlayerPageState createState() => _VideoPlayerPageState();
@@ -377,12 +383,15 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   void initState() {
     super.initState();
-    videoPlayerController = VideoPlayerController.network(widget.videoUrl)
+    videoPlayerController = VideoPlayerController.network(widget.video.videoUrl)
       ..initialize().then((value) {
-        isLoading = false;
         videoPlayerController.play();
         videoPlayerController.setVolume(1);
         videoPlayerController.setLooping(true);
+
+        setState(() {
+          isLoading = false;
+        });
       });
   }
 
@@ -401,9 +410,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             child: VideoPlayer(videoPlayerController),
           )
         : Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.white,
-            ),
+            child: CircularProgressIndicator(),
           );
   }
 }
+
+// CachedNetworkImage(
+//               imageUrl: widget.video.imageUrl,
+//               fit: BoxFit.cover,
+//               placeholder: (context, url) => CircularProgressIndicator(),
+//             ),

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:video_share/src/Extension/CircleButtons.dart';
 import 'package:video_share/src/Extension/CustomTextField.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/FirebaseRef.dart';
@@ -50,22 +52,15 @@ class SignUpPage extends StatelessWidget {
                               key: _formKey,
                               child: Column(
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.black,
-                                        width: 2,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: IconButton(
-                                      iconSize: 80,
-                                      icon: model.userImage == null
-                                          ? Icon(Icons.person)
-                                          : Image.file(model.userImage),
-                                      onPressed: model.selectImage,
-                                    ),
-                                  ),
+                                  model.userImage == null
+                                      ? CircleIconButton(
+                                          onPress: model.selectImage,
+                                        )
+                                      : CircleImageButton(
+                                          imageProvider:
+                                              FileImage(model.userImage),
+                                          onTap: model.selectImage,
+                                        ),
                                   CustomTextFields(
                                     controller: model.nameTextControlller,
                                     labeltext: "Fullname",
@@ -215,8 +210,38 @@ class SignUpPageModel extends ChangeNotifier {
   }
 
   Future selectImage() async {
-    final videoPath = await ImagePicker().getImage(source: ImageSource.gallery);
-    if (videoPath != null) userImage = File(videoPath.path);
-    notifyListeners();
+    List<Asset> resultList = <Asset>[];
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 1,
+        selectedAssets: resultList,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+
+      var path2 = await FlutterAbsolutePath.getAbsolutePath(
+          resultList.first.identifier);
+      final file = await getImageFileFromAssets(path2);
+      userImage = file;
+      notifyListeners();
+    } on Exception catch (e) {
+      print(e.toString());
+    }
+
+    /// M1 chip bug
+    // final videoPath = await ImagePicker().getImage(source: ImageSource.gallery);
+    // if (videoPath != null) userImage = File(videoPath.path);
+    // notifyListeners();
+  }
+
+  Future<File> getImageFileFromAssets(String path) async {
+    final file = File(path);
+    return file;
   }
 }
