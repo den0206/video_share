@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Pages/TabPage/AddPage.dart';
+import 'package:video_share/src/Pages/TabPage/ProfilePage.dart';
+import 'package:video_share/src/Provider/UserState.dart';
 
 import 'TabPage/VideoPage.dart';
 
@@ -13,7 +15,7 @@ class HomePage extends StatelessWidget {
     Text("Search"),
     AddPage(),
     Text("Message"),
-    Text("Profile"),
+    ProfilePage(),
   ];
 
   @override

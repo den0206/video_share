@@ -22,9 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserState>(
-          create: (context) => UserState(),
-        )
+        ChangeNotifierProvider<UserState>(create: (context) => UserState())
       ],
       child: MaterialApp(
         title: 'Video Share',

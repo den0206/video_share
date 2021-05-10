@@ -8,7 +8,7 @@ class UserState extends ChangeNotifier {
 
   Future setUser({String uid}) async {
     final userId = uid ?? _auth.currentUser.uid;
-    if (userId != null) {
+    if (userId != null && currentUser == null) {
       print("set User state");
       final doc = await firebaseRef(FirebaseRef.user).doc(userId).get();
 

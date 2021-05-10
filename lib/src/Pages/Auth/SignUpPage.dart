@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -10,6 +11,7 @@ import 'package:video_share/src/Extension/CircleButtons.dart';
 import 'package:video_share/src/Extension/CustomTextField.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/FirebaseRef.dart';
+import 'package:video_share/src/Extension/StrogageRef.dart';
 import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Extension/Validations.dart';
 import 'package:video_share/src/Model/FBUser.dart';
@@ -50,68 +52,72 @@ class SignUpPage extends StatelessWidget {
                             padding: const EdgeInsets.all(14.0),
                             child: Form(
                               key: _formKey,
-                              child: Column(
-                                children: [
-                                  model.userImage == null
-                                      ? CircleIconButton(
-                                          onPress: model.selectImage,
-                                        )
-                                      : CircleImageButton(
-                                          imageProvider:
-                                              FileImage(model.userImage),
-                                          onTap: model.selectImage,
-                                        ),
-                                  CustomTextFields(
-                                    controller: model.nameTextControlller,
-                                    labeltext: "Fullname",
-                                    validator: valideName,
-                                    onChange: (value) =>
-                                        model.nameTextControlller,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFields(
-                                    controller: model.emailController,
-                                    labeltext: "Email",
-                                    validator: validateEmail,
-                                    onChange: (value) => model.emailController,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFields(
-                                    controller: model.passwordController,
-                                    labeltext: "Password",
-                                    validator: validPassword,
-                                    inputType: null,
-                                    isSecure: true,
-                                    onChange: (value) =>
-                                        model.passwordController,
-                                  ),
-                                  SizedBox(
-                                    height: 40,
-                                  ),
-                                  CustomButton(
-                                    width:
-                                        MediaQuery.of(context).size.width - 100,
-                                    title: "SIgn Up",
-                                    onPressed: () {
-                                      if (_formKey.currentState.validate()) {
-                                        FocusScope.of(context).unfocus();
-                                        model.signUpUser(
-                                          onSuccess: (user) {
-                                            currentUser = user;
-                                            Navigator.of(context).pop();
-                                          },
-                                          errorCallback: (e) {
-                                            print(e);
-                                          },
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ],
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    model.userImage == null
+                                        ? CircleIconButton(
+                                            onPress: model.selectImage,
+                                          )
+                                        : CircleImageButton(
+                                            imageProvider:
+                                                FileImage(model.userImage),
+                                            onTap: model.selectImage,
+                                          ),
+                                    CustomTextFields(
+                                      controller: model.nameTextControlller,
+                                      labeltext: "Fullname",
+                                      validator: valideName,
+                                      onChange: (value) =>
+                                          model.nameTextControlller,
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    CustomTextFields(
+                                      controller: model.emailController,
+                                      labeltext: "Email",
+                                      validator: validateEmail,
+                                      onChange: (value) =>
+                                          model.emailController,
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    CustomTextFields(
+                                      controller: model.passwordController,
+                                      labeltext: "Password",
+                                      validator: validPassword,
+                                      inputType: null,
+                                      isSecure: true,
+                                      onChange: (value) =>
+                                          model.passwordController,
+                                    ),
+                                    SizedBox(
+                                      height: 40,
+                                    ),
+                                    CustomButton(
+                                      width: MediaQuery.of(context).size.width -
+                                          100,
+                                      title: "SIgn Up",
+                                      onPressed: () {
+                                        if (_formKey.currentState.validate()) {
+                                          FocusScope.of(context).unfocus();
+                                          model.signUpUser(
+                                            onSuccess: (user) {
+                                              currentUser = user;
+                                              print(user.imageUrl);
+                                              Navigator.of(context).pop();
+                                            },
+                                            errorCallback: (e) {
+                                              showErrorDialog(context, e);
+                                            },
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -170,35 +176,57 @@ class SignUpPageModel extends ChangeNotifier {
 
   Future<void> signUpUser({
     @required void Function(FBUser user) onSuccess,
-    @required void Function(FirebaseAuthException e) errorCallback,
+    @required void Function(Exception e) errorCallback,
   }) async {
     var connectivityResult = await (Connectivity().checkConnectivity());
 
     if (connectivityResult != ConnectivityResult.wifi &&
         connectivityResult != ConnectivityResult.mobile) {
-      print("No Internet");
+      Exception error = Exception("No InterNet");
+      errorCallback(error);
+      return;
+    }
+
+    if (userImage == null) {
+      Exception error = Exception("No Image");
+      errorCallback(error);
       return;
     }
 
     loading = true;
     notifyListeners();
 
-    Future.delayed(Duration(seconds: 2));
-
     try {
       UserCredential _credential = await _auth.createUserWithEmailAndPassword(
           email: _email, password: _password);
 
       if (_credential.user != null) {
-        FBUser user = FBUser(
-          uid: _credential.user.uid,
-          name: _fullname,
-          email: _email,
+        final _uid = _credential.user.uid;
+
+        String imageUrl = await uploadStorage(
+          StorageRef.profile,
+          "$_uid",
+          userImage,
+          UploadType.image,
         );
 
-        firebaseRef(FirebaseRef.user).doc(user.uid).set(user.toMap());
-        notifyListeners();
-        onSuccess(user);
+        print(imageUrl);
+        FBUser user = FBUser(
+          uid: _uid,
+          name: _fullname,
+          email: _email,
+          imageUrl: imageUrl,
+        );
+
+        print(user);
+
+        firebaseRef(FirebaseRef.user)
+            .doc(user.uid)
+            .set(user.toMap())
+            .then((value) {
+          notifyListeners();
+          onSuccess(user);
+        });
       }
     } on FirebaseAuthException catch (e) {
       errorCallback(e);

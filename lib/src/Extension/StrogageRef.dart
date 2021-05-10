@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:video_compress/video_compress.dart';
 
-enum StorageRef { video, image }
+enum StorageRef { video, image, profile }
 
 extension StorageRefExtension on StorageRef {
   String get path {
@@ -13,6 +13,8 @@ extension StorageRefExtension on StorageRef {
         return "Video";
       case StorageRef.image:
         return "Image";
+      case StorageRef.profile:
+        return "Profile";
       default:
         return "";
     }
@@ -24,20 +26,23 @@ Reference storageRef(StorageRef ref) {
 }
 
 enum UploadType { video, image }
+
 Future<String> uploadStorage(StorageRef ref, String path, dynamic file,
     [UploadType type = UploadType.video]) async {
   Reference filePath = storageRef(ref).child(path);
   UploadTask uploadTask;
 
-  switch (type) {
-    case UploadType.video:
-      uploadTask =
-          filePath.putFile(file, SettableMetadata(contentType: 'video/mp4'));
-      break;
-    case UploadType.image:
-      uploadTask = filePath.putFile(file);
-      break;
+  if (type == UploadType.video) {
+    uploadTask =
+        filePath.putFile(file, SettableMetadata(contentType: 'video/mp4'));
+  } else {
+    uploadTask = filePath.putFile(file);
   }
+
+  // uploadTask.then((res) {
+  //   print("calls");
+  //   return res.ref.getDownloadURL();
+  // });
 
   TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
 

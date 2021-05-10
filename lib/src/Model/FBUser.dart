@@ -26,6 +26,7 @@ class FBUser {
       UserKey.uid: uid,
       UserKey.name: name,
       UserKey.email: email,
+      UserKey.imageUrl: imageUrl,
     };
   }
 }
