@@ -15,6 +15,7 @@ import 'package:video_share/src/Extension/StrogageRef.dart';
 import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Extension/Validations.dart';
 import 'package:video_share/src/Model/FBUser.dart';
+import 'package:video_share/src/Pages/HomePage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
 class SignUpPage extends StatelessWidget {
@@ -106,8 +107,11 @@ class SignUpPage extends StatelessWidget {
                                           model.signUpUser(
                                             onSuccess: (user) {
                                               currentUser = user;
-                                              print(user.imageUrl);
-                                              Navigator.of(context).pop();
+
+                                              Navigator.of(context)
+                                                  .pushReplacementNamed(
+                                                      HomePage.id);
+                                              // Navigator.of(context).pop();
                                             },
                                             errorCallback: (e) {
                                               showErrorDialog(context, e);
@@ -192,13 +196,15 @@ class SignUpPageModel extends ChangeNotifier {
       errorCallback(error);
       return;
     }
-
+    isSignIn = true;
     loading = true;
     notifyListeners();
 
     try {
       UserCredential _credential = await _auth.createUserWithEmailAndPassword(
-          email: _email, password: _password);
+        email: _email,
+        password: _password,
+      );
 
       if (_credential.user != null) {
         final _uid = _credential.user.uid;
@@ -210,7 +216,6 @@ class SignUpPageModel extends ChangeNotifier {
           UploadType.image,
         );
 
-        print(imageUrl);
         FBUser user = FBUser(
           uid: _uid,
           name: _fullname,
@@ -218,17 +223,16 @@ class SignUpPageModel extends ChangeNotifier {
           imageUrl: imageUrl,
         );
 
-        print(user);
-
         firebaseRef(FirebaseRef.user)
             .doc(user.uid)
             .set(user.toMap())
             .then((value) {
-          notifyListeners();
           onSuccess(user);
         });
       }
     } on FirebaseAuthException catch (e) {
+      loading = false;
+      notifyListeners();
       errorCallback(e);
     } catch (e) {
       errorCallback(e);

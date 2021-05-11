@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_share/src/Pages/Auth/LoginPage.dart';
 import 'package:video_share/src/Pages/Auth/SignUpPage.dart';
+import 'package:video_share/src/Pages/HomePage.dart';
 import 'package:video_share/src/Pages/RootPage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         routes: {
           LoginPage.id: (context) => LoginPage(),
           SignUpPage.id: (context) => SignUpPage(),
+          HomePage.id: (context) => HomePage()
         },
       ),
     );

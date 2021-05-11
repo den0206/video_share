@@ -10,16 +10,22 @@ import 'TabPage/VideoPage.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key key}) : super(key: key);
 
+  static const String id = "Home";
+
   final List _tabPages = [
     VideoPage(),
     Text("Search"),
     AddPage(),
-    Text("Message"),
+    Center(child: Text(currentUser.name)),
     ProfilePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    if (currentUser == null) {
+      final userState = Provider.of<UserState>(context);
+      userState.setUser();
+    }
     return ChangeNotifierProvider<HomePageModel>(
       create: (context) => HomePageModel(),
       builder: (context, child) {

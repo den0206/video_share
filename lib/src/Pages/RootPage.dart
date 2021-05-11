@@ -8,20 +8,21 @@ class BranchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (currentUser == null) {
-      final userState = Provider.of<UserState>(context);
-      userState.setUser();
-    }
     return Consumer<UserState>(
       builder: (context, model, child) {
         if (currentUser != null) {
           return HomePage();
         } else {
-          // model.setUser();
+          if (!isSignIn) {
+            model.setUser();
+            isSignIn = false;
+          }
         }
 
         return Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.white,
+          ),
         );
       },
     );
