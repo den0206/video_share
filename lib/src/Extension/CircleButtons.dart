@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CircleImageButton extends StatelessWidget {
@@ -53,6 +54,36 @@ class CircleIconButton extends StatelessWidget {
         icon: Icon(Icons.person),
         onPressed: onPress,
       ),
+    );
+  }
+}
+
+class CircleCacheAvatar extends StatelessWidget {
+  const CircleCacheAvatar({
+    Key key,
+    @required this.imageUrl,
+  }) : super(key: key);
+
+  final String imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      imageBuilder: (context, imageProvider) => Container(
+        width: 120.0,
+        height: 120.0,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          // border: Border.all(
+          //   color: Colors.black,
+          //   width: 2,
+          // ),
+          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+        ),
+      ),
+      placeholder: (context, url) => CircularProgressIndicator(),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
 }

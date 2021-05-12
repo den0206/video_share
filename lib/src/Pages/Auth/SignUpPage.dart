@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -107,7 +106,7 @@ class SignUpPage extends StatelessWidget {
                                           model.signUpUser(
                                             onSuccess: (user) {
                                               currentUser = user;
-
+                                              isSignIn = false;
                                               Navigator.of(context)
                                                   .pushReplacementNamed(
                                                       HomePage.id);
@@ -196,6 +195,7 @@ class SignUpPageModel extends ChangeNotifier {
       errorCallback(error);
       return;
     }
+
     isSignIn = true;
     loading = true;
     notifyListeners();

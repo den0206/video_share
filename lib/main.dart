@@ -7,6 +7,7 @@ import 'package:video_share/src/Pages/Auth/LoginPage.dart';
 import 'package:video_share/src/Pages/Auth/SignUpPage.dart';
 import 'package:video_share/src/Pages/HomePage.dart';
 import 'package:video_share/src/Pages/RootPage.dart';
+import 'package:video_share/src/Pages/TabPage/EditPage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
 Future<void> main() async {
@@ -36,7 +37,8 @@ class MyApp extends StatelessWidget {
         routes: {
           LoginPage.id: (context) => LoginPage(),
           SignUpPage.id: (context) => SignUpPage(),
-          HomePage.id: (context) => HomePage()
+          HomePage.id: (context) => HomePage(),
+          EditPage.id: (context) => EditPage()
         },
       ),
     );
@@ -53,8 +55,9 @@ class RootPage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
-            child: CircularProgressIndicator(),
-          );
+              child: CircularProgressIndicator(
+            backgroundColor: Colors.white,
+          ));
         }
 
         if (snapshot.hasData) {

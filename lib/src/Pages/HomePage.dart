@@ -17,7 +17,9 @@ class HomePage extends StatelessWidget {
     Text("Search"),
     AddPage(),
     Center(child: Text(currentUser.name)),
-    ProfilePage(),
+    ProfilePage(
+      user: currentUser,
+    ),
   ];
 
   @override

@@ -15,7 +15,6 @@ class BranchPage extends StatelessWidget {
         } else {
           if (!isSignIn) {
             model.setUser();
-            isSignIn = false;
           }
         }
 
