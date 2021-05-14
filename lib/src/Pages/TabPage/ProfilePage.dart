@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import 'package:video_share/src/Extension/CircleButtons.dart';
@@ -10,19 +11,23 @@ import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Model/FBUser.dart';
 import 'package:video_share/src/Model/Video.dart';
 import 'package:video_share/src/Pages/TabPage/EditPage.dart';
+import 'package:video_share/src/Pages/TabPage/VideoPage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({
     Key key,
     @required this.user,
+    this.hasBackButton = false,
   }) : super(key: key);
 
   final FBUser user;
+  final bool hasBackButton;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: !hasBackButton ? null : AppBar(),
       body: Center(
         child: SingleChildScrollView(
           physics: ScrollPhysics(),
@@ -89,64 +94,8 @@ class ProfilePage extends StatelessWidget {
                 SizedBox(
                   height: 30,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    if (user == currentUser)
-                      CustomButton(
-                        title: "Logout",
-                        backColor: Colors.red,
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return CupertinoAlertDialog(
-                                title: Text(
-                                  "LOG OUT",
-                                ),
-                                content: Text(
-                                  "would you logout?",
-                                ),
-                                actions: [
-                                  CupertinoDialogAction(
-                                    child: Text("Cancel"),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                  CupertinoDialogAction(
-                                    child: Text("Log out"),
-                                    isDestructiveAction: true,
-                                    onPressed: () {
-                                      final userState = Provider.of<UserState>(
-                                          context,
-                                          listen: false);
-
-                                      userState.logout();
-                                      Navigator.pop(context);
-                                    },
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    CustomButton(
-                      title: "Edit",
-                      onPressed: () {
-                        Navigator.pushNamed(context, EditPage.id,
-                            arguments: user);
-                      },
-                    ),
-                    if (user != currentUser)
-                      CustomButton(
-                        title: "Edit",
-                        onPressed: () {
-                          Navigator.pushNamed(context, EditPage.id,
-                              arguments: user);
-                        },
-                      ),
-                  ],
-                ),
+                if (user == currentUser) _CurrentUserSpace(user: user),
+                if (user != currentUser) _AnotherUserSpace(user: user),
                 SizedBox(height: 20),
                 Divider(),
                 Text(
@@ -185,13 +134,23 @@ class ProfilePage extends StatelessWidget {
                         Video video =
                             Video.fromDocument(snapshot.data.docs[index]);
 
-                        return CachedNetworkImage(
-                          imageUrl: video.imageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                        return InkResponse(
+                          child: CachedNetworkImage(
+                            imageUrl: video.imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                          onTap: () {
+                            showCupertinoModalBottomSheet(
+                              expand: true,
+                              context: context,
+                              backgroundColor: Colors.white,
+                              builder: (context) => VideoView(video: video),
+                            );
+                          },
                         );
                       },
                     );
@@ -233,6 +192,97 @@ class _RelationText extends StatelessWidget {
     return Text(
       "$value",
       style: googleFont(size: 23, color: Colors.black, fw: FontWeight.w500),
+    );
+  }
+}
+
+class _CurrentUserSpace extends StatelessWidget {
+  const _CurrentUserSpace({
+    Key key,
+    @required this.user,
+  }) : super(key: key);
+
+  final FBUser user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        CustomButton(
+          title: "Logout",
+          backColor: Colors.red,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: Text(
+                    "LOG OUT",
+                  ),
+                  content: Text(
+                    "would you logout?",
+                  ),
+                  actions: [
+                    CupertinoDialogAction(
+                      child: Text("Cancel"),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    CupertinoDialogAction(
+                      child: Text("Log out"),
+                      isDestructiveAction: true,
+                      onPressed: () {
+                        final userState =
+                            Provider.of<UserState>(context, listen: false);
+
+                        userState.logout();
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              },
+            );
+          },
+        ),
+        CustomButton(
+          title: "Edit",
+          onPressed: () {
+            Navigator.pushNamed(context, EditPage.id, arguments: user);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _AnotherUserSpace extends StatelessWidget {
+  const _AnotherUserSpace({
+    Key key,
+    @required this.user,
+  }) : super(key: key);
+
+  final FBUser user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        CustomButton(
+          title: "Follow",
+          backColor: Colors.blue,
+          onPressed: () {
+            print("Follow");
+          },
+        ),
+        CustomButton(
+          title: "Message",
+          onPressed: () {
+            print(user.name);
+          },
+        ),
+      ],
     );
   }
 }

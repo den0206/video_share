@@ -70,7 +70,7 @@ class VideoPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       Video video = model.videos[index];
 
-                      return _VideoView(
+                      return VideoView(
                         video: video,
                       );
                     },
@@ -85,8 +85,8 @@ class VideoPage extends StatelessWidget {
   }
 }
 
-class _VideoView extends StatelessWidget {
-  const _VideoView({
+class VideoView extends StatelessWidget {
+  const VideoView({
     Key key,
     @required this.video,
   }) : super(key: key);

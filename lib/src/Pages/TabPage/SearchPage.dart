@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:video_share/src/Extension/FirestoreService.dart';
 import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Model/FBUser.dart';
+import 'package:video_share/src/Pages/TabPage/ProfilePage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key key}) : super(key: key);
@@ -66,9 +67,7 @@ class _SearchPageState extends State<SearchPage> {
                   },
                   onSubmitted: (value) {
                     if (value.trim().isNotEmpty) {
-                      setState(() {
-                        model.query = FirestoreService.searchUser(value);
-                      });
+                      model.searchUser();
                     }
                   },
                   // onChanged: model.onchanged,
@@ -97,7 +96,22 @@ class _SearchPageState extends State<SearchPage> {
                           itemBuilder: (context, index) {
                             FBUser user =
                                 FBUser.fromDocument(snapshot.data.docs[index]);
-                            return UserCell(user: user);
+                            return UserCell(
+                              user: user,
+                              ontap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return ProfilePage(
+                                        user: user,
+                                        hasBackButton: true,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            );
                           },
                         );
                       },
@@ -133,9 +147,11 @@ class UserCell extends StatelessWidget {
   const UserCell({
     Key key,
     @required this.user,
+    @required this.ontap,
   }) : super(key: key);
 
   final FBUser user;
+  final Function() ontap;
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +163,13 @@ class UserCell extends StatelessWidget {
             ? AssetImage("assets/images/user_placeholder.jpg")
             : CachedNetworkImageProvider(user.imageUrl),
       ),
+      title: Row(
+        children: [
+          Text(user.name),
+        ],
+      ),
+      trailing: SizedBox.shrink(),
+      onTap: ontap,
     );
   }
 }
