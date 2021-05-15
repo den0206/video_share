@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           primaryColor: Colors.white,
+          scaffoldBackgroundColor: Colors.red[200],
         ),
         // home: SignUpPage(),
         home: RootPage(),

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/FirebaseRef.dart';
 import 'package:video_share/src/Extension/Style.dart';
+import 'package:video_share/src/Extension/VideoPlayer.dart';
 import 'package:video_share/src/Model/FBUser.dart';
 import 'package:video_share/src/Model/Video.dart';
 
@@ -70,7 +70,7 @@ class VideoPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       Video video = model.videos[index];
 
-                      return VideoView(
+                      return _VideoView(
                         video: video,
                       );
                     },
@@ -85,8 +85,8 @@ class VideoPage extends StatelessWidget {
   }
 }
 
-class VideoView extends StatelessWidget {
-  const VideoView({
+class _VideoView extends StatelessWidget {
+  const _VideoView({
     Key key,
     @required this.video,
   }) : super(key: key);
@@ -363,60 +363,3 @@ class _AnimationProfile extends StatelessWidget {
     );
   }
 }
-
-class VideoPlayerPage extends StatefulWidget {
-  VideoPlayerPage({
-    Key key,
-    @required this.video,
-  }) : super(key: key);
-  final Video video;
-
-  @override
-  _VideoPlayerPageState createState() => _VideoPlayerPageState();
-}
-
-class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  VideoPlayerController videoPlayerController;
-
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    videoPlayerController = VideoPlayerController.network(widget.video.videoUrl)
-      ..initialize().then((value) {
-        videoPlayerController.play();
-        videoPlayerController.setVolume(1);
-        videoPlayerController.setLooping(true);
-
-        setState(() {
-          isLoading = false;
-        });
-      });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    videoPlayerController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return !isLoading
-        ? Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: VideoPlayer(videoPlayerController),
-          )
-        : Center(
-            child: CircularProgressIndicator(),
-          );
-  }
-}
-
-// CachedNetworkImage(
-//               imageUrl: widget.video.imageUrl,
-//               fit: BoxFit.cover,
-//               placeholder: (context, url) => CircularProgressIndicator(),
-//             ),

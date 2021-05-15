@@ -34,24 +34,33 @@ class CircleImageButton extends StatelessWidget {
 class CircleIconButton extends StatelessWidget {
   const CircleIconButton({
     Key key,
+    @required this.icon,
+    this.size = 80,
+    this.backColor = Colors.white,
+    this.borderColor = Colors.black,
     @required this.onPress,
   }) : super(key: key);
 
+  final Icon icon;
+  final double size;
+  final Color backColor;
+  final Color borderColor;
   final Function() onPress;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        color: backColor,
         border: Border.all(
-          color: Colors.black,
+          color: borderColor,
           width: 2,
         ),
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        iconSize: 80,
-        icon: Icon(Icons.person),
+        iconSize: size,
+        icon: icon,
         onPressed: onPress,
       ),
     );

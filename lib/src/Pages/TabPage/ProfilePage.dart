@@ -7,11 +7,12 @@ import 'package:provider/provider.dart';
 import 'package:video_share/src/Extension/CircleButtons.dart';
 import 'package:video_share/src/Extension/CustomWidgets.dart';
 import 'package:video_share/src/Extension/FirebaseRef.dart';
+import 'package:video_share/src/Extension/FirestoreService.dart';
 import 'package:video_share/src/Extension/Style.dart';
+import 'package:video_share/src/Extension/VideoPlayer.dart';
 import 'package:video_share/src/Model/FBUser.dart';
 import 'package:video_share/src/Model/Video.dart';
 import 'package:video_share/src/Pages/TabPage/EditPage.dart';
-import 'package:video_share/src/Pages/TabPage/VideoPage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -77,17 +78,17 @@ class ProfilePage extends StatelessWidget {
                     Text(
                       "Following",
                       style: googleFont(
-                          size: 17, color: Colors.grey, fw: FontWeight.w700),
+                          size: 17, color: Colors.black, fw: FontWeight.w700),
                     ),
                     Text(
                       "Fans",
                       style: googleFont(
-                          size: 17, color: Colors.grey, fw: FontWeight.w700),
+                          size: 17, color: Colors.black, fw: FontWeight.w700),
                     ),
                     Text(
                       "Hearts",
                       style: googleFont(
-                          size: 17, color: Colors.grey, fw: FontWeight.w700),
+                          size: 17, color: Colors.black, fw: FontWeight.w700),
                     ),
                   ],
                 ),
@@ -133,6 +134,7 @@ class ProfilePage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         Video video =
                             Video.fromDocument(snapshot.data.docs[index]);
+                        video.user = user;
 
                         return InkResponse(
                           child: CachedNetworkImage(
@@ -144,12 +146,40 @@ class ProfilePage extends StatelessWidget {
                                 Icon(Icons.error),
                           ),
                           onTap: () {
-                            showCupertinoModalBottomSheet(
-                              expand: true,
-                              context: context,
-                              backgroundColor: Colors.white,
-                              builder: (context) => VideoView(video: video),
-                            );
+                            if (user.uid == currentUser.uid)
+                              showCupertinoModalBottomSheet(
+                                expand: true,
+                                context: context,
+                                backgroundColor: Colors.white,
+                                builder: (context) =>
+                                    _VideoDeletePage(video: video),
+                              );
+
+                            if (user.uid != currentUser.uid)
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return Scaffold(
+                                    body: Stack(
+                                      children: [
+                                        VideoPlayerPage(video: video),
+                                        Positioned(
+                                          left: 20,
+                                          top: 40,
+                                          child: CircleIconButton(
+                                            icon: Icon(
+                                              Icons.arrow_back,
+                                              color: Colors.black,
+                                            ),
+                                            size: 20,
+                                            onPress: () =>
+                                                Navigator.of(context).pop(),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ));
                           },
                         );
                       },
@@ -283,6 +313,85 @@ class _AnotherUserSpace extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _VideoDeletePage extends StatefulWidget {
+  const _VideoDeletePage({
+    Key key,
+    @required this.video,
+  }) : super(key: key);
+
+  final Video video;
+
+  @override
+  __VideoDeletePageState createState() => __VideoDeletePageState();
+}
+
+class __VideoDeletePageState extends State<_VideoDeletePage> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return OverlayLoadingWidget(
+      isLoading: isLoading,
+      child: Scaffold(
+        body: VideoPlayerPage(
+          video: widget.video,
+        ),
+        floatingActionButton: CircleIconButton(
+          icon: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          size: 40,
+          backColor: Colors.grey,
+          borderColor: Colors.grey,
+          onPress: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: Text("Delete Video?"),
+                  actions: [
+                    CupertinoDialogAction(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.of(context).pop()),
+                    CupertinoDialogAction(
+                      child: Text("Delete"),
+                      isDestructiveAction: true,
+                      onPressed: () {
+                        setState(() {
+                          isLoading = true;
+                        });
+
+                        FirestoreService.deleteVideo(
+                          video: widget.video,
+                          onSuccess: () {
+                            print("Delete Success");
+
+                            setState(() {
+                              isLoading = false;
+                            });
+                            Navigator.pop(context);
+                          },
+                          errorCallback: (e) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                            showErrorDialog(context, e);
+                          },
+                        );
+                      },
+                    )
+                  ],
+                );
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }

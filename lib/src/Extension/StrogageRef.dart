@@ -63,3 +63,10 @@ Future<File> compressVideo(String path) async {
 
   return compressVideo.file;
 }
+
+Future<void> deleteFileFromStorage({@required String fileUrl}) async {
+  final _storage = FirebaseStorage.instance;
+  var fileRef = _storage.refFromURL(fileUrl);
+
+  await fileRef.delete();
+}

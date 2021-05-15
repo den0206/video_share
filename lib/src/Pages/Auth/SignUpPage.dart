@@ -57,6 +57,7 @@ class SignUpPage extends StatelessWidget {
                                   children: [
                                     model.userImage == null
                                         ? CircleIconButton(
+                                            icon: Icon(Icons.person),
                                             onPress: model.selectImage,
                                           )
                                         : CircleImageButton(
