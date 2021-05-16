@@ -55,7 +55,7 @@ class VideoPage extends StatelessWidget {
                   if (!snapshot.hasData) {
                     return Center(
                       child: CircularProgressIndicator(
-                        backgroundColor: Colors.white,
+                        backgroundColor: globalPink,
                       ),
                     );
                   }

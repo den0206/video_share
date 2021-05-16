@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
                 type: BottomNavigationBarType.fixed,
                 onTap: model.setIndex,
                 currentIndex: model.currentIndex,
-                selectedItemColor: Colors.lightBlue,
+                selectedItemColor: Colors.white,
                 unselectedItemColor: Colors.black,
                 items: tabItems,
               ),

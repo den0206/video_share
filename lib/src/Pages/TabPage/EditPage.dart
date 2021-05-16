@@ -15,6 +15,7 @@ class EditPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit'),
+        backgroundColor: Colors.pink,
       ),
       body: Center(
         child: Text(

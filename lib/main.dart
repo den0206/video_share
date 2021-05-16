@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Pages/Auth/LoginPage.dart';
 import 'package:video_share/src/Pages/Auth/SignUpPage.dart';
 import 'package:video_share/src/Pages/HomePage.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           primaryColor: Colors.white,
-          scaffoldBackgroundColor: Colors.red[200],
+          scaffoldBackgroundColor: globalPink,
         ),
         // home: SignUpPage(),
         home: RootPage(),
@@ -56,9 +57,7 @@ class RootPage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
-              child: CircularProgressIndicator(
-            backgroundColor: Colors.white,
-          ));
+              child: CircularProgressIndicator(backgroundColor: globalPink));
         }
 
         if (snapshot.hasData) {

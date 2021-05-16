@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Pages/HomePage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
@@ -20,7 +21,7 @@ class BranchPage extends StatelessWidget {
 
         return Center(
           child: CircularProgressIndicator(
-            backgroundColor: Colors.white,
+            backgroundColor: globalPink,
           ),
         );
       },

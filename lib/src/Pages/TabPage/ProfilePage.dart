@@ -28,7 +28,12 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: !hasBackButton ? null : AppBar(),
+      appBar: !hasBackButton
+          ? null
+          : AppBar(
+              title: Text(user.name),
+              backgroundColor: Colors.pink,
+            ),
       body: Center(
         child: SingleChildScrollView(
           physics: ScrollPhysics(),
@@ -110,7 +115,9 @@ class ProfilePage extends StatelessWidget {
                       .get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return CircularProgressIndicator(
+                        backgroundColor: globalPink,
+                      );
                     }
 
                     if (snapshot.data.docs.length == 0) {
@@ -136,52 +143,7 @@ class ProfilePage extends StatelessWidget {
                             Video.fromDocument(snapshot.data.docs[index]);
                         video.user = user;
 
-                        return InkResponse(
-                          child: CachedNetworkImage(
-                            imageUrl: video.imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator(),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                          ),
-                          onTap: () {
-                            if (user.uid == currentUser.uid)
-                              showCupertinoModalBottomSheet(
-                                expand: true,
-                                context: context,
-                                backgroundColor: Colors.white,
-                                builder: (context) =>
-                                    _VideoDeletePage(video: video),
-                              );
-
-                            if (user.uid != currentUser.uid)
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) {
-                                  return Scaffold(
-                                    body: Stack(
-                                      children: [
-                                        VideoPlayerPage(video: video),
-                                        Positioned(
-                                          left: 20,
-                                          top: 40,
-                                          child: CircleIconButton(
-                                            icon: Icon(
-                                              Icons.arrow_back,
-                                              color: Colors.black,
-                                            ),
-                                            size: 20,
-                                            onPress: () =>
-                                                Navigator.of(context).pop(),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ));
-                          },
-                        );
+                        return _VideoCell(video: video, user: user);
                       },
                     );
                   },
@@ -309,10 +271,73 @@ class _AnotherUserSpace extends StatelessWidget {
         CustomButton(
           title: "Message",
           onPressed: () {
-            print(user.name);
+            // final hm = Provider.of<HomePageModel>(context, listen: false);
+
+            // hm.setIndex(3);
+            Navigator.of(context).pop();
           },
         ),
       ],
+    );
+  }
+}
+
+class _VideoCell extends StatelessWidget {
+  const _VideoCell({
+    Key key,
+    @required this.video,
+    @required this.user,
+  }) : super(key: key);
+
+  final Video video;
+  final FBUser user;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkResponse(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: CachedNetworkImage(
+          imageUrl: video.imageUrl,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+        ),
+      ),
+      onTap: () {
+        if (user.uid == currentUser.uid)
+          showCupertinoModalBottomSheet(
+            expand: true,
+            context: context,
+            backgroundColor: Colors.white,
+            builder: (context) => _VideoDeletePage(video: video),
+          );
+
+        if (user.uid != currentUser.uid)
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return Scaffold(
+                body: Stack(
+                  children: [
+                    VideoPlayerPage(video: video),
+                    Positioned(
+                      left: 20,
+                      top: 40,
+                      child: CircleIconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                        ),
+                        size: 20,
+                        onPress: () => Navigator.of(context).pop(),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          ));
+      },
     );
   }
 }
@@ -337,8 +362,24 @@ class __VideoDeletePageState extends State<_VideoDeletePage> {
     return OverlayLoadingWidget(
       isLoading: isLoading,
       child: Scaffold(
-        body: VideoPlayerPage(
-          video: widget.video,
+        body: Stack(
+          children: [
+            VideoPlayerPage(
+              video: widget.video,
+            ),
+            Positioned(
+              left: 20,
+              top: 40,
+              child: CircleIconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ),
+                size: 20,
+                onPress: () => Navigator.of(context).pop(),
+              ),
+            )
+          ],
         ),
         floatingActionButton: CircleIconButton(
           icon: Icon(
@@ -361,20 +402,21 @@ class __VideoDeletePageState extends State<_VideoDeletePage> {
                     CupertinoDialogAction(
                       child: Text("Delete"),
                       isDestructiveAction: true,
-                      onPressed: () {
+                      onPressed: () async {
+                        /// dismiss dialog
+                        Navigator.pop(context);
+
                         setState(() {
                           isLoading = true;
                         });
 
-                        FirestoreService.deleteVideo(
+                        await FirestoreService.deleteVideo(
                           video: widget.video,
                           onSuccess: () {
-                            print("Delete Success");
-
                             setState(() {
                               isLoading = false;
+                              Navigator.of(context).pop();
                             });
-                            Navigator.pop(context);
                           },
                           errorCallback: (e) {
                             setState(() {

@@ -8,3 +8,5 @@ TextStyle googleFont({
 }) {
   return GoogleFonts.montserrat(fontSize: size, color: color, fontWeight: fw);
 }
+
+final Color globalPink = Colors.red[200];

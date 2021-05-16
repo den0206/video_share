@@ -82,7 +82,9 @@ class _SearchPageState extends State<SearchPage> {
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return Center(
-                            child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator(
+                              backgroundColor: globalPink,
+                            ),
                           );
                         }
                         if (snapshot.data.docs.length == 0) {

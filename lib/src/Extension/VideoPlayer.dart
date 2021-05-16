@@ -42,14 +42,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return !isLoading
-        ? Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: VideoPlayer(videoPlayerController),
-          )
-        : Center(
-            child: CircularProgressIndicator(backgroundColor: Colors.white),
-          );
+    return Scaffold(
+      body: !isLoading
+          ? Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: VideoPlayer(videoPlayerController),
+            )
+          : Center(
+              child: CircularProgressIndicator(backgroundColor: Colors.white),
+            ),
+    );
   }
 }
