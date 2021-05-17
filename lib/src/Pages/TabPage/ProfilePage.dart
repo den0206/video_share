@@ -11,8 +11,11 @@ import 'package:video_share/src/Extension/FirestoreService.dart';
 import 'package:video_share/src/Extension/Style.dart';
 import 'package:video_share/src/Extension/VideoPlayer.dart';
 import 'package:video_share/src/Model/FBUser.dart';
+import 'package:video_share/src/Model/Recent.dart';
 import 'package:video_share/src/Model/Video.dart';
+import 'package:video_share/src/Pages/HomePage.dart';
 import 'package:video_share/src/Pages/TabPage/EditPage.dart';
+import 'package:video_share/src/Pages/TabPage/Messge/ChatPage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -157,20 +160,6 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-class ProfliPageModel extends ChangeNotifier {
-  ProfliPageModel(
-    this.user,
-  );
-  final FBUser user;
-
-  Future getVideos() async {
-    firebaseRef(FirebaseRef.user)
-        .doc(user.uid)
-        .collection(FirebaseRef.video.path)
-        .get();
-  }
-}
-
 class _RelationText extends StatelessWidget {
   const _RelationText({
     Key key,
@@ -248,7 +237,7 @@ class _CurrentUserSpace extends StatelessWidget {
   }
 }
 
-class _AnotherUserSpace extends StatelessWidget {
+class _AnotherUserSpace extends StatefulWidget {
   const _AnotherUserSpace({
     Key key,
     @required this.user,
@@ -256,6 +245,12 @@ class _AnotherUserSpace extends StatelessWidget {
 
   final FBUser user;
 
+  @override
+  __AnotherUserSpaceState createState() => __AnotherUserSpaceState();
+}
+
+class __AnotherUserSpaceState extends State<_AnotherUserSpace> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -270,11 +265,30 @@ class _AnotherUserSpace extends StatelessWidget {
         ),
         CustomButton(
           title: "Message",
-          onPressed: () {
-            // final hm = Provider.of<HomePageModel>(context, listen: false);
+          isLoading: isLoading,
+          onPressed: () async {
+            setState(() {
+              isLoading = true;
+            });
 
-            // hm.setIndex(3);
+            String chatRoomid = await Recent.createPrivateCaht(
+              currentUID: currentUser.uid,
+              user2Id: widget.user.uid,
+              users: [currentUser, widget.user],
+            );
+
+            final hm = Provider.of<TabPageModel>(context, listen: false);
+
+            hm.setIndex(3);
             Navigator.of(context).pop();
+
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ChatPage(
+                  chatRoomId: chatRoomid,
+                ),
+              ),
+            );
           },
         ),
       ],

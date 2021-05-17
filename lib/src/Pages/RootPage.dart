@@ -12,7 +12,7 @@ class BranchPage extends StatelessWidget {
     return Consumer<UserState>(
       builder: (context, model, child) {
         if (currentUser != null) {
-          return HomePage();
+          return TabPage();
         } else {
           if (!isSignIn) {
             model.setUser();

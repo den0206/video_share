@@ -110,7 +110,7 @@ class SignUpPage extends StatelessWidget {
                                               isSignIn = false;
                                               Navigator.of(context)
                                                   .pushReplacementNamed(
-                                                      HomePage.id);
+                                                      TabPage.id);
                                               // Navigator.of(context).pop();
                                             },
                                             errorCallback: (e) {

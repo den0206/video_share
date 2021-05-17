@@ -6,6 +6,7 @@ class CustomButton extends StatelessWidget {
     this.height = 50,
     this.width = 200,
     @required this.title,
+    this.isLoading = false,
     this.titleColor = Colors.white,
     this.backColor = Colors.green,
     @required this.onPressed,
@@ -14,6 +15,7 @@ class CustomButton extends StatelessWidget {
   final double width;
 
   final String title;
+  final bool isLoading;
   final Color titleColor;
   final Color backColor;
   final Function() onPressed;
@@ -24,21 +26,25 @@ class CustomButton extends StatelessWidget {
       height: height,
       width: width,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: backColor,
-          onPrimary: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
+          style: ElevatedButton.styleFrom(
+            primary: backColor,
+            onPrimary: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
           ),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: titleColor,
-          ),
-        ),
-        onPressed: onPressed,
-      ),
+          child: !isLoading
+              ? Text(
+                  title,
+                  style: TextStyle(
+                    color: titleColor,
+                  ),
+                )
+              : CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+          onPressed: !isLoading ? onPressed : null),
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:video_share/src/Pages/Auth/LoginPage.dart';
 import 'package:video_share/src/Pages/Auth/SignUpPage.dart';
 import 'package:video_share/src/Pages/HomePage.dart';
 import 'package:video_share/src/Pages/RootPage.dart';
+import 'package:video_share/src/Pages/SplashScreen.dart';
 import 'package:video_share/src/Pages/TabPage/EditPage.dart';
 import 'package:video_share/src/Provider/UserState.dart';
 
@@ -25,7 +26,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserState>(create: (context) => UserState())
+        ChangeNotifierProvider<UserState>(create: (context) => UserState()),
+        ChangeNotifierProvider<TabPageModel>(
+            create: (context) => TabPageModel()),
       ],
       child: MaterialApp(
         title: 'Video Share',
@@ -39,7 +42,7 @@ class MyApp extends StatelessWidget {
         routes: {
           LoginPage.id: (context) => LoginPage(),
           SignUpPage.id: (context) => SignUpPage(),
-          HomePage.id: (context) => HomePage(),
+          TabPage.id: (context) => TabPage(),
           EditPage.id: (context) => EditPage()
         },
       ),
@@ -56,8 +59,10 @@ class RootPage extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-              child: CircularProgressIndicator(backgroundColor: globalPink));
+          return SplashScreen();
+
+          ///  Center(
+          //     child: CircularProgressIndicator(backgroundColor: globalPink));
         }
 
         if (snapshot.hasData) {

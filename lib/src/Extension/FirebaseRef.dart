@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum FirebaseRef { user, video }
+enum FirebaseRef { user, video, recent }
 
 extension FirebaseRefExtension on FirebaseRef {
   String get path {
@@ -9,6 +9,8 @@ extension FirebaseRefExtension on FirebaseRef {
         return "User";
       case FirebaseRef.video:
         return "Video";
+      case FirebaseRef.recent:
+        return "Recent";
 
       default:
         return "";
