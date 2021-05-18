@@ -71,17 +71,19 @@ class CircleCacheAvatar extends StatelessWidget {
   const CircleCacheAvatar({
     Key key,
     @required this.imageUrl,
+    this.size = 120,
   }) : super(key: key);
 
   final String imageUrl;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
       imageBuilder: (context, imageProvider) => Container(
-        width: 120.0,
-        height: 120.0,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           // border: Border.all(

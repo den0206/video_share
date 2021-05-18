@@ -21,6 +21,18 @@ class Recent {
   int counter;
   Timestamp date;
 
+  FBUser withUser;
+
+  Recent.fromDocument(DocumentSnapshot document) {
+    id = document.id;
+    userId = document[RecentKey.userId];
+    withUserId = document[RecentKey.withUserId];
+    chatroomId = document[RecentKey.chatRoomId];
+    lastMessae = document[RecentKey.lastMessae];
+    counter = document[RecentKey.counter];
+    date = document[RecentKey.date] as Timestamp;
+  }
+
   static Future<String> createPrivateCaht({
     String currentUID,
     String user2Id,

@@ -277,6 +277,8 @@ class __AnotherUserSpaceState extends State<_AnotherUserSpace> {
               users: [currentUser, widget.user],
             );
 
+            await Future.delayed(Duration(seconds: 2));
+
             final hm = Provider.of<TabPageModel>(context, listen: false);
 
             hm.setIndex(3);
